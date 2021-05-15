@@ -29,4 +29,6 @@ specific language governing rights and limitations under the License.
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ICON_FLD = 'icons'
+PLUGIN_ICON_FN = 'nahleberg.svg'
+PLUGIN_NAME = 'Nahleberg'
 TRANSLATION_FLD = 'i18n'
