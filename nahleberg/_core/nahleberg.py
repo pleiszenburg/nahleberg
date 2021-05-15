@@ -29,13 +29,27 @@ specific language governing rights and limitations under the License.
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 import os
-from sys import platform
+import platform
+
+from PyQt5.QtWidgets import QAction, QIcon
 
 from qgis.gui import QgisInterface
 
 from typeguard import typechecked
 
-from .i18n import translate as tr
+from .i18n import (
+    translate as tr,
+    setupTranslation,
+)
+from .config import Config, get_config_path
+from .const import (
+    CONFIG_FN,
+    ICON_FLD,
+    PLUGIN_ICON_FN,
+    TRANSLATION_FLD,
+)
+from .fsm import Fsm
+from .msg import msg_critical
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # CLASS
@@ -56,3 +70,64 @@ class Nahleberg:
 
         self._mainwindow = self._iface.mainWindow()
         self._system = platform.system()
+
+        self._ui_dict = {}
+        self._ui_cleanup = []
+
+        self._fsm = None
+        self._translator = None
+        self._translator_path = None
+        self._wait_for_mainwindow = None
+
+
+    def initGui(self):
+        """
+        QGIS Plugin Interface Routine
+        """
+
+        self._translator, self._translator_path = setupTranslation(os.path.join(
+            self._plugin_root_fld, TRANSLATION_FLD
+            ))
+
+        self._ui_dict['action_manage'] = QAction(tr('&Nahleberg Management'))
+        self._ui_dict['action_manage'].setEnabled(False)
+        self._ui_dict['action_manage'].setIcon(QIcon(os.path.join(
+            self._plugin_root_fld, ICON_FLD, PLUGIN_ICON_FN
+            )))
+
+        workBenchMenuText = tr('Nahle&berg')
+        self._iface.addPluginToMenu(workBenchMenuText, self._ui_dict['action_manage'])
+        self._ui_cleanup.append(
+            lambda: self._iface.removePluginMenu(workBenchMenuText, self._ui_dict['action_manage'])
+            )
+
+        # TODO
+
+        self._wait_for_mainwindow = True
+        self._iface.initializationCompleted.connect(self._connect_ui)
+
+
+    def _connect_ui(self):
+
+        if not self._wait_for_mainwindow:
+            return
+        self._wait_for_mainwindow = False
+        self._iface.initializationCompleted.disconnect(self._connect_ui)
+
+        try:
+            config = Config(os.path.join(get_config_path(), CONFIG_FN))
+            self._fsm = Fsm(config = config)
+        except Exception as e:
+            msg_critical(e, self._mainwindow)
+            return
+
+        # TODO
+
+
+    def unload(self):
+        """
+        QGIS Plugin Interface Routine
+        """
+
+        for cleanup_action in self._ui_cleanup:
+            cleanup_action()
