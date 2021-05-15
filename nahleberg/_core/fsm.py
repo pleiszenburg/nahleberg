@@ -30,10 +30,15 @@ specific language governing rights and limitations under the License.
 
 from typeguard import typechecked
 
+from .abc import ConfigABC, FsmABC
+
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # CLASS
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 @typechecked
-class Fsm:
-    pass
+class Fsm(FsmABC):
+
+    def __init__(self, config: ConfigABC):
+
+        self._config = config

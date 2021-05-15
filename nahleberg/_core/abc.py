@@ -34,5 +34,11 @@ from abc import ABC
 # CLASSES
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+class ConfigABC(ABC):
+    pass
+
+class FsmABC(ABC):
+    pass
+
 class NahlebergABC(ABC):
     pass

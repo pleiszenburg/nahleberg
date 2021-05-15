@@ -37,6 +37,7 @@ from qgis.core import QgsApplication
 
 from typeguard import typechecked
 
+from .abc import ConfigABC
 from .const import QGIS_CONFIG_FLD
 from .error import ConfigFormatError
 from .i18n import translate as tr
@@ -68,7 +69,7 @@ def get_config_path() -> str:
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 @typechecked
-class Config:
+class Config(ConfigABC):
 
     def __init__(self, fn: str):
 
