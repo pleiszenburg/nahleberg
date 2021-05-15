@@ -88,9 +88,9 @@ def _getTranslationPath(translationsPath: str, language: str) -> str:
 
 
 @typechecked
-def translate(key: str) -> str:
+def translate(key: str, context: str = 'global') -> str:
     """
     http://pyqt.sourceforge.net/Docs/PyQt5/i18n.html#differences-between-pyqt5-and-qt
     """
 
-    return QApplication.translate('global', key)
+    return QApplication.translate(context, key)
