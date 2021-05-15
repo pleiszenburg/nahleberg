@@ -95,10 +95,10 @@ class Nahleberg:
             self._plugin_root_fld, ICON_FLD, PLUGIN_ICON_FN
             )))
 
-        workBenchMenuText = tr('Nahle&berg')
-        self._iface.addPluginToMenu(workBenchMenuText, self._ui_dict['action_manage'])
+        nahlebergMenuText = tr('Nahle&berg')
+        self._iface.addPluginToMenu(nahlebergMenuText, self._ui_dict['action_manage'])
         self._ui_cleanup.append(
-            lambda: self._iface.removePluginMenu(workBenchMenuText, self._ui_dict['action_manage'])
+            lambda: self._iface.removePluginMenu(nahlebergMenuText, self._ui_dict['action_manage'])
             )
 
         # TODO
