@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import QMessageBox
 
 from typeguard import typechecked
 
-from .util import translation as tr
+from .i18n import translate as tr
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # ROUTINES
