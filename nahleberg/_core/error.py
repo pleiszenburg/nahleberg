@@ -30,5 +30,3 @@ specific language governing rights and limitations under the License.
 
 class TranslationError(Exception):
     pass
-
-ALL_ERRORS = (TranslationError,)
