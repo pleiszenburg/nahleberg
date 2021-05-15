@@ -31,7 +31,8 @@ specific language governing rights and limitations under the License.
 import os
 import platform
 
-from PyQt5.QtWidgets import QAction, QIcon
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QAction
 
 from qgis.gui import QgisInterface
 
