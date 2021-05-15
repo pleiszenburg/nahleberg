@@ -43,7 +43,7 @@ TRANSLATION_FLD = 'i18n'
 
 def translate():
 
-    tmpProFileName = 'qgist.pro'
+    tmpProFileName = 'nahleberg.pro'
 
     _writeProjectFile(tmpProFileName)
 
