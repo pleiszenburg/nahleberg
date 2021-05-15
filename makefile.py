@@ -25,7 +25,7 @@ specific language governing rights and limitations under the License.
 """
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# IMPORT (Python Standard Library)
+# IMPORT
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 import os
@@ -37,9 +37,8 @@ import subprocess
 
 TRANSLATION_FLD = 'i18n'
 
-
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# "PUBLIC" API
+# ROUTINES
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 def translate():
@@ -54,10 +53,6 @@ def translate():
     os.remove(tmpProFileName)
 
 
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# INTERNAL ROUTINES
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 def _genPythonFiles():
 
     for path, _, filesList in os.walk('nahleberg'):
@@ -69,6 +64,7 @@ def _genPythonFiles():
                 continue
             yield pythonFilePath
 
+
 def _genTranslationFiles():
 
     for fileName in os.listdir(TRANSLATION_FLD):
@@ -79,6 +75,7 @@ def _genTranslationFiles():
             continue
         yield translationPath
 
+
 def _runCommand(commandList):
 
     proc = subprocess.Popen(
@@ -86,6 +83,7 @@ def _runCommand(commandList):
         )
     outs, errs = proc.communicate()
     print(outs.decode('utf-8'), errs.decode('utf-8'))
+
 
 def _writeProjectFile(fn):
 
