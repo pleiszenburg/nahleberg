@@ -28,6 +28,7 @@ specific language governing rights and limitations under the License.
 # CONST
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+CONFIG_FN = 'nahleberg.json'
 ICON_FLD = 'icons'
 PLUGIN_ICON_FN = 'nahleberg.svg'
 PLUGIN_NAME = 'Nahleberg'
