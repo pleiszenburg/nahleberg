@@ -28,7 +28,14 @@ specific language governing rights and limitations under the License.
 # IMPORT
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+import os
+from sys import platform
+
+from qgis.gui import QgisInterface
+
 from typeguard import typechecked
+
+from .i18n import translate as tr
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # CLASS
@@ -36,4 +43,16 @@ from typeguard import typechecked
 
 @typechecked
 class Nahleberg:
-    pass
+
+    def __init__(self, iface: QgisInterface, plugin_root_fld: str):
+
+        if not os.path.exists(plugin_root_fld):
+            raise ValueError(tr('plugin_root_fld must exists'))
+        if not os.path.isdir(plugin_root_fld):
+            raise ValueError(tr('plugin_root_fld must be a directory'))
+
+        self._iface = iface
+        self._plugin_root_fld = plugin_root_fld
+
+        self._mainwindow = self._iface.mainWindow()
+        self._system = platform.system()
