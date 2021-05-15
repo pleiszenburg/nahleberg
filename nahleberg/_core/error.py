@@ -28,5 +28,8 @@ specific language governing rights and limitations under the License.
 # CLASSES
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+class ConfigFormatError(Exception):
+    pass
+
 class TranslationError(Exception):
     pass
