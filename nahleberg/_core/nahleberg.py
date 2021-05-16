@@ -28,15 +28,19 @@ specific language governing rights and limitations under the License.
 # IMPORT
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+import asyncio
 import os
 import platform
 
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QAction,
 )
 
 from qgis.gui import QgisInterface
+
+from qasync import QEventLoop
 
 from typeguard import typechecked
 
@@ -82,6 +86,7 @@ class Nahleberg:
         self._translator = None
         self._translator_path = None
         self._wait_for_mainwindow = None
+        self._loop = None
 
 
     def initGui(self):
@@ -141,6 +146,14 @@ class Nahleberg:
         try:
             config = Config(os.path.join(get_config_path(), CONFIG_FN))
             self._fsm = Fsm(config = config)
+        except Exception as e:
+            msg_critical(e, self._mainwindow)
+            return
+
+        try:
+            app = QCoreApplication.instance()
+            self._loop = QEventLoop(app, already_running = True)
+            asyncio.set_event_loop(self._loop)
         except Exception as e:
             msg_critical(e, self._mainwindow)
             return
