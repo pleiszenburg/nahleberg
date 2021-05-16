@@ -31,6 +31,8 @@ specific language governing rights and limitations under the License.
 from typeguard import typechecked
 
 from .abc import ConfigABC, FsmABC
+from .error import ClusterConnected, ClusterDisconnected
+from .i18n import translate as tr
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # CLASS
@@ -43,22 +45,35 @@ class Fsm(FsmABC):
 
         self._config = config
 
+        self._dask_client = None
+        self._cluster = None
+
+
+    @property
+    def connected(self) -> bool:
+
+        return self._dask_client is not None
+
 
     async def connect(self):
 
-        pass
+        if self.connected:
+            raise ClusterConnected(tr('cluster is already connected'))
 
 
     async def disconnect(self):
 
-        pass
+        if not self.connected:
+            raise ClusterDisconnected(tr('cluster is already disconnect'))
 
 
     async def new(self):
 
-        pass
+        if self.connected:
+            raise ClusterConnected(tr('cluster is already connected - disconnect before creating a new one'))
 
 
     async def destroy(self):
 
-        pass
+        if not self.connected:
+            raise ClusterDisconnected(tr('cluster is disconnect - can not destroy'))

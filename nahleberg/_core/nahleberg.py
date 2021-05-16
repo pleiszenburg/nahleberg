@@ -56,6 +56,7 @@ from .const import (
     PLUGIN_NAME,
     TRANSLATION_FLD,
 )
+from .error import ClusterConnected, ClusterDisconnected
 from .fsm import Fsm
 from .msg import msg_critical
 
@@ -170,25 +171,41 @@ class Nahleberg:
     @asyncSlot
     async def _connect(self):
 
-        await self._fsm.connect()
+        try:
+            await self._fsm.connect()
+        except ClusterConnected as e:
+            msg_critical(e, self._mainwindow)
+            return
 
 
     @asyncSlot
     async def _disconnect(self):
 
-        await self._fsm.disconnect()
+        try:
+            await self._fsm.disconnect()
+        except ClusterDisconnected as e:
+            msg_critical(e, self._mainwindow)
+            return
 
 
     @asyncSlot
     async def _new(self):
 
-        await self._fsm.new()
+        try:
+            await self._fsm.new()
+        except ClusterConnected as e:
+            msg_critical(e, self._mainwindow)
+            return
 
 
     @asyncSlot
     async def _destroy(self):
 
-        await self._fsm.destroy()
+        try:
+            await self._fsm.destroy()
+        except ClusterDisconnected as e:
+            msg_critical(e, self._mainwindow)
+            return
 
 
     def unload(self):

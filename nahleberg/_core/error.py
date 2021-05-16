@@ -28,6 +28,12 @@ specific language governing rights and limitations under the License.
 # CLASSES
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+class ClusterConnected(Exception):
+    pass
+
+class ClusterDisconnected(Exception):
+    pass
+
 class ConfigFormatError(Exception):
     pass
 
