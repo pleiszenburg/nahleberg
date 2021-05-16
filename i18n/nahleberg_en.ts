@@ -88,23 +88,53 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nahleberg/_core/nahleberg.py" line="64"/>
+        <location filename="../nahleberg/_core/nahleberg.py" line="73"/>
         <source>plugin_root_fld must exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nahleberg/_core/nahleberg.py" line="66"/>
+        <location filename="../nahleberg/_core/nahleberg.py" line="75"/>
         <source>plugin_root_fld must be a directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nahleberg/_core/nahleberg.py" line="92"/>
-        <source>&amp;Nahleberg Management</source>
+        <location filename="../nahleberg/_core/fsm.py" line="61"/>
+        <source>cluster is already connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nahleberg/_core/nahleberg.py" line="98"/>
-        <source>Nahle&amp;berg</source>
+        <location filename="../nahleberg/_core/fsm.py" line="67"/>
+        <source>cluster is already disconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nahleberg/_core/fsm.py" line="73"/>
+        <source>cluster is already connected - disconnect before creating a new one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nahleberg/_core/fsm.py" line="79"/>
+        <source>cluster is disconnect - can not destroy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nahleberg/_core/nahleberg.py" line="121"/>
+        <source>Connect to existing cluster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nahleberg/_core/nahleberg.py" line="121"/>
+        <source>Disconnect from cluster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nahleberg/_core/nahleberg.py" line="121"/>
+        <source>New cluster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nahleberg/_core/nahleberg.py" line="121"/>
+        <source>Destroy cluster</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
