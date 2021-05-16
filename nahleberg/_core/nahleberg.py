@@ -40,7 +40,7 @@ from PyQt5.QtWidgets import (
 
 from qgis.gui import QgisInterface
 
-from qasync import QEventLoop
+from qasync import asyncSlot, QEventLoop
 
 from typeguard import typechecked
 
@@ -167,24 +167,28 @@ class Nahleberg:
             self._ui_dict[f'action_{name:s}'].triggered.connect(getattr(self, f'_{name:s}'))
 
 
-    def _connect(self):
+    @asyncSlot
+    async def _connect(self):
 
-        self._fsm.connect()
-
-
-    def _disconnect(self):
-
-        self._fsm.disconnect()
+        await self._fsm.connect()
 
 
-    def _new(self):
+    @asyncSlot
+    async def _disconnect(self):
 
-        self._fsm.new()
+        await self._fsm.disconnect()
 
 
-    def _destroy(self):
+    @asyncSlot
+    async def _new(self):
 
-        self._fsm.destroy()
+        await self._fsm.new()
+
+
+    @asyncSlot
+    async def _destroy(self):
+
+        await self._fsm.destroy()
 
 
     def unload(self):

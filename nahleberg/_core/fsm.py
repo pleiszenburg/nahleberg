@@ -44,21 +44,21 @@ class Fsm(FsmABC):
         self._config = config
 
 
-    def connect(self):
+    async def connect(self):
 
         pass
 
 
-    def disconnect(self):
+    async def disconnect(self):
 
         pass
 
 
-    def new(self):
+    async def new(self):
 
         pass
 
 
-    def destroy(self):
+    async def destroy(self):
 
         pass
