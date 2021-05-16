@@ -144,16 +144,16 @@ class Nahleberg:
         self._iface.initializationCompleted.disconnect(self._connect_ui)
 
         try:
-            config = Config(os.path.join(get_config_path(), CONFIG_FN))
-            self._fsm = Fsm(config = config)
+            app = QCoreApplication.instance()
+            self._loop = QEventLoop(app, already_running = True)
+            asyncio.set_event_loop(self._loop)
         except Exception as e:
             msg_critical(e, self._mainwindow)
             return
 
         try:
-            app = QCoreApplication.instance()
-            self._loop = QEventLoop(app, already_running = True)
-            asyncio.set_event_loop(self._loop)
+            config = Config(os.path.join(get_config_path(), CONFIG_FN))
+            self._fsm = Fsm(config = config)
         except Exception as e:
             msg_critical(e, self._mainwindow)
             return
