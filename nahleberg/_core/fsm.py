@@ -35,6 +35,7 @@ from typeguard import typechecked
 from .abc import ConfigABC, FsmABC
 from .error import ClusterConnected, ClusterDisconnected
 from .i18n import translate as tr
+from .log import get_logger
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # CLASS
@@ -68,6 +69,7 @@ class Fsm(FsmABC):
             prefix = prefix,
             # tokenvar = tokenvar,
             # wait = wait,
+            log = get_logger(prefix),
         )
         self._client = await self._cluster.get_client()
 
@@ -102,6 +104,7 @@ class Fsm(FsmABC):
             # dask_ipc = dask_ipc,
             # dask_dash = dask_dash,
             # dask_nanny = dask_nanny,
+            log = get_logger(prefix),
         )
         self._client = await self._cluster.get_client()
 
