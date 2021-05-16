@@ -28,6 +28,8 @@ specific language governing rights and limitations under the License.
 # IMPORT
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+from scherbelberg import Cluster
+
 from typeguard import typechecked
 
 from .abc import ConfigABC, FsmABC
@@ -45,20 +47,29 @@ class Fsm(FsmABC):
 
         self._config = config
 
-        self._dask_client = None
         self._cluster = None
+        self._client = None
 
 
     @property
     def connected(self) -> bool:
 
-        return self._dask_client is not None
+        return self._client is not None
 
 
-    async def connect(self):
+    async def connect(self, prefix: str):
 
         if self.connected:
             raise ClusterConnected(tr('cluster is already connected'))
+
+        assert len(prefix) > 0
+
+        self._cluster = await Cluster.from_existing(
+            prefix = prefix,
+            # tokenvar = tokenvar,
+            # wait = wait,
+        )
+        self._client = await self._cluster.get_client()
 
 
     async def disconnect(self):
@@ -66,14 +77,42 @@ class Fsm(FsmABC):
         if not self.connected:
             raise ClusterDisconnected(tr('cluster is already disconnected'))
 
+        await self._client.close()
 
-    async def new(self):
+        self._cluster = None
+        self._client = None
+
+
+    async def new(self, prefix: str):
 
         if self.connected:
             raise ClusterConnected(tr('cluster is already connected - disconnect before creating a new one'))
+
+        assert len(prefix) > 0
+
+        self._cluster = await Cluster.from_new(
+            prefix = prefix,
+            # tokenvar = tokenvar,
+            # wait = wait,
+            # scheduler = scheduler,
+            # worker = worker,
+            # image = image,
+            # datacenter = datacenter,
+            # workers = workers,
+            # dask_ipc = dask_ipc,
+            # dask_dash = dask_dash,
+            # dask_nanny = dask_nanny,
+        )
+        self._client = await self._cluster.get_client()
 
 
     async def destroy(self):
 
         if not self.connected:
             raise ClusterDisconnected(tr('cluster is disconnected - can not destroy'))
+
+        await self._client.close()
+        await self._cluster.destroy()
+
+        self._cluster = None
+        self._client = None
