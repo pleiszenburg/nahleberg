@@ -36,7 +36,7 @@ from asyncio import (
 )
 import os
 import platform
-from typing import Callable
+from typing import Any, Callable
 
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
@@ -132,8 +132,8 @@ class Nahleberg:
         self._ui_dict['radio_status'] = QRadioButton()
         self._ui_dict['radio_status'].setObjectName('radio_status')
         self._ui_dict['radio_status'].setToolTip(tr('disconnected'))
-        self._ui_dict['radio_status'].setChecked(False)
         self._ui_dict['radio_status'].setEnabled(False)
+        self._ui_dict['radio_status'].setChecked(True)
         self._set_color('red')
         self._ui_dict['toolbar_iface'].addWidget(self._ui_dict['radio_status'])
 
@@ -192,75 +192,91 @@ class Nahleberg:
             self._ui_dict[f'action_{name:s}'].setEnabled(True)
 
 
-    def _sync(self, func: Callable) -> Callable:
+    def _sync(self, func: Callable, *args: Any, **kwargs: Any) -> Callable:
 
         def wrapper():
-            create_task(func())
+            create_task(func(*args, **kwargs))
 
         return wrapper
 
 
     async def _connect(self):
+        """
+        Event
+        """
 
         prefix = 'cluster' # TODO
 
         if not self._ui_dict[f'action_connect'].isEnabled():
             return
-        for name in self._action_names:
-            self._ui_dict[f'action_{name:s}'].setEnabled(False)
+
+        self._set_color('yellow')
+        self._set_enabled(False)
 
         try:
             await self._fsm.connect(prefix = prefix)
         except ClusterConnected as e:
             msg_warning(e, self._mainwindow)
-            return
         except Exception as e:
             msg_critical(e, self._mainwindow)
-            return
+
+        self._set_enabled(True)
 
 
     async def _disconnect(self):
+        """
+        Event
+        """
 
         if not self._ui_dict[f'action_disconnect'].isEnabled():
             return
-        for name in self._action_names:
-            self._ui_dict[f'action_{name:s}'].setEnabled(False)
+
+        self._set_color('red')
+        self._set_enabled(False)
 
         try:
             await self._fsm.disconnect()
         except ClusterDisconnected as e:
             msg_warning(e, self._mainwindow)
-            return
         except Exception as e:
             msg_critical(e, self._mainwindow)
-            return
+
+        self._set_enabled(True)
 
 
     async def _new(self):
+        """
+        Event
+        """
 
         prefix = 'cluster' # TODO
 
         if not self._ui_dict[f'action_new'].isEnabled():
             return
-        for name in self._action_names:
-            self._ui_dict[f'action_{name:s}'].setEnabled(False)
+
+        self._set_color('yellow')
+        self._set_enabled(False)
 
         try:
             await self._fsm.new(prefix = prefix)
         except ClusterConnected as e:
             msg_warning(e, self._mainwindow)
-            return
         except Exception as e:
             msg_critical(e, self._mainwindow)
-            return
+
+        self._set_enabled(True)
 
 
     async def _destroy(self):
+        """
+        Event
+        """
 
         if not self._ui_dict[f'action_destroy'].isEnabled():
             return
-        for name in self._action_names:
-            self._ui_dict[f'action_{name:s}'].setEnabled(False)
+
+        self._set_color('red')
+        self._set_enabled(False)
 
         try:
             await self._fsm.destroy()
@@ -270,6 +286,8 @@ class Nahleberg:
         except Exception as e:
             msg_critical(e, self._mainwindow)
             return
+
+        self._set_enabled(True)
 
 
     async def _busy_blink(self, wait: float = 0.5):
@@ -284,6 +302,27 @@ class Nahleberg:
                 setChecked(not isChecked())
         except CancelledError:
             pass
+
+
+    def _set_enabled(self, status: bool):
+
+        if status:
+
+            self._sync(self._set_busy, False)()
+            if self._fsm.connected:
+                self._ui_dict[f'action_disconnect'].setEnabled(True)
+                self._ui_dict[f'action_destroy'].setEnabled(True)
+                self._set_color('green')
+            else:
+                self._ui_dict[f'action_connect'].setEnabled(True)
+                self._ui_dict[f'action_new'].setEnabled(True)
+                self._set_color('red')
+
+        else:
+
+            self._sync(self._set_busy, True)()
+            for name in self._action_names:
+                self._ui_dict[f'action_{name:s}'].setEnabled(False)
 
 
     async def _set_busy(self, status: bool = True, wait: float = 0.5):
@@ -303,6 +342,7 @@ class Nahleberg:
                     await self._busy_task
                 except CancelledError:
                     pass
+                self._ui_dict['radio_status'].setChecked(True)
 
 
     def _set_color(self, color: str):
