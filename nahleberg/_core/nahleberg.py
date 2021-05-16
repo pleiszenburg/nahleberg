@@ -28,9 +28,15 @@ specific language governing rights and limitations under the License.
 # IMPORT
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-import asyncio
+from asyncio import (
+    CancelledError,
+    create_task,
+    set_event_loop,
+    sleep,
+)
 import os
 import platform
+from typing import Callable
 
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
@@ -41,7 +47,7 @@ from PyQt5.QtWidgets import (
 
 from qgis.gui import QgisInterface
 
-from qasync import asyncSlot, QEventLoop
+from qasync import QEventLoop
 
 from typeguard import typechecked
 
@@ -90,6 +96,9 @@ class Nahleberg:
         self._translator_path = None
         self._wait_for_mainwindow = None
         self._loop = None
+        self._action_names = None
+
+        self._busy_task = None
 
 
     def initGui(self):
@@ -128,13 +137,20 @@ class Nahleberg:
         self._ui_dict['radio_status'].setStyleSheet(RADIO_COLOR.format(COLOR = 'red'))
         self._ui_dict['toolbar_iface'].addWidget(self._ui_dict['radio_status'])
 
-        for name, tooltip in (
-            ('connect', tr('Connect to existing cluster')),
-            ('disconnect', tr('Disconnect from cluster')),
-            ('new', tr('New cluster')),
-            ('destroy', tr('Destroy cluster')),
-        ):
-            self._ui_dict[f'action_{name:s}'] = QAction()
+        self._action_names = (
+            'connect',
+            'disconnect',
+            'new',
+            'destroy',
+        )
+
+        for name, tooltip in zip(self._action_names, (
+            tr('Connect to existing cluster'),
+            tr('Disconnect from cluster'),
+            tr('New cluster'),
+            tr('Destroy cluster'),
+        )):
+            self._ui_dict[f'action_{name:s}'] = QAction("", self._mainwindow)
             self._ui_dict[f'action_{name:s}'].setObjectName(f'action_{name:s}')
             self._ui_dict[f'action_{name:s}'].setIcon(QIcon(os.path.join(
                 self._plugin_root_fld, ICON_FLD, f'{name:s}.svg'
@@ -157,7 +173,7 @@ class Nahleberg:
         try:
             app = QCoreApplication.instance()
             self._loop = QEventLoop(app, already_running = True)
-            asyncio.set_event_loop(self._loop)
+            set_event_loop(self._loop)
         except Exception as e:
             msg_critical(e, self._mainwindow)
             return
@@ -169,19 +185,29 @@ class Nahleberg:
             msg_critical(e, self._mainwindow)
             return
 
-        for name in (
-            'connect',
-            'disconnect',
-            'new',
-            'destroy',
-        ):
-            self._ui_dict[f'action_{name:s}'].triggered.connect(getattr(self, f'_{name:s}'))
+        for name in self._action_names:
+            self._ui_dict[f'action_{name:s}'].triggered.connect(self._sync(getattr(self, f'_{name:s}')))
+
+        for name in ('connect', 'new'):
+            self._ui_dict[f'action_{name:s}'].setEnabled(True)
 
 
-    @asyncSlot
+    def _sync(self, func: Callable) -> Callable:
+
+        def wrapper():
+            create_task(func())
+
+        return wrapper
+
+
     async def _connect(self):
 
         prefix = 'cluster' # TODO
+
+        if not self._ui_dict[f'action_connect'].isEnabled():
+            return
+        for name in self._action_names:
+            self._ui_dict[f'action_{name:s}'].setEnabled(False)
 
         try:
             await self._fsm.connect(prefix = prefix)
@@ -193,8 +219,12 @@ class Nahleberg:
             return
 
 
-    @asyncSlot
     async def _disconnect(self):
+
+        if not self._ui_dict[f'action_disconnect'].isEnabled():
+            return
+        for name in self._action_names:
+            self._ui_dict[f'action_{name:s}'].setEnabled(False)
 
         try:
             await self._fsm.disconnect()
@@ -206,10 +236,14 @@ class Nahleberg:
             return
 
 
-    @asyncSlot
     async def _new(self):
 
         prefix = 'cluster' # TODO
+
+        if not self._ui_dict[f'action_new'].isEnabled():
+            return
+        for name in self._action_names:
+            self._ui_dict[f'action_{name:s}'].setEnabled(False)
 
         try:
             await self._fsm.new(prefix = prefix)
@@ -221,8 +255,12 @@ class Nahleberg:
             return
 
 
-    @asyncSlot
     async def _destroy(self):
+
+        if not self._ui_dict[f'action_destroy'].isEnabled():
+            return
+        for name in self._action_names:
+            self._ui_dict[f'action_{name:s}'].setEnabled(False)
 
         try:
             await self._fsm.destroy()
@@ -232,6 +270,39 @@ class Nahleberg:
         except Exception as e:
             msg_critical(e, self._mainwindow)
             return
+
+
+    async def _busy_blink(self, wait: float = 0.5):
+
+        assert wait > 0
+
+        setChecked = self._ui_dict['radio_status'].setChecked
+        isChecked = self._ui_dict['radio_status'].isChecked
+
+        try:
+            while await sleep(wait, result = True):
+                setChecked(not isChecked())
+        except CancelledError:
+            pass
+
+
+    async def _set_busy(self, status: bool = True, wait: float = 0.5):
+
+        assert wait > 0
+
+        if status:
+
+            if self._busy_task is None or self._busy_task.done():
+                self._busy_task = create_task(self._busy_blink(wait = wait))
+
+        else:
+
+            if self._busy_task is not None and not self._busy_task.done():
+                self._busy_task.cancel()
+                try:
+                    await self._busy_task
+                except CancelledError:
+                    pass
 
 
     def unload(self):
