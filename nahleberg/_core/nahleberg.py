@@ -32,7 +32,9 @@ import os
 import platform
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import (
+    QAction,
+)
 
 from qgis.gui import QgisInterface
 
@@ -47,6 +49,7 @@ from .const import (
     CONFIG_FN,
     ICON_FLD,
     PLUGIN_ICON_FN,
+    PLUGIN_NAME,
     TRANSLATION_FLD,
 )
 from .fsm import Fsm
@@ -91,6 +94,7 @@ class Nahleberg:
             ))
 
         self._ui_dict['action_manage'] = QAction(tr('&Nahleberg Management'))
+        self._ui_dict['action_manage'].setObjectName('action_manage')
         self._ui_dict['action_manage'].setEnabled(False)
         self._ui_dict['action_manage'].setIcon(QIcon(os.path.join(
             self._plugin_root_fld, ICON_FLD, PLUGIN_ICON_FN
@@ -102,7 +106,26 @@ class Nahleberg:
             lambda: self._iface.removePluginMenu(nahlebergMenuText, self._ui_dict['action_manage'])
             )
 
-        # TODO
+        self._ui_dict['toolbar_iface'] = self._iface.addToolBar(tr(PLUGIN_NAME))
+        self._ui_dict['toolbar_iface'].setObjectName(PLUGIN_NAME.lower())
+        self._ui_cleanup.append(
+            lambda: self._ui_dict['toolbar_iface'].setParent(None)
+            )
+
+        for name, tooltip in (
+            ('connect', tr('Connect to existing cluster')),
+            ('disconnect', tr('Disconnect from cluster')),
+            ('new', tr('New cluster')),
+            ('destroy', tr('Destroy cluster')),
+        ):
+            self._ui_dict[f'action_{name:s}'] = QAction()
+            self._ui_dict[f'action_{name:s}'].setObjectName(f'action_{name:s}')
+            self._ui_dict[f'action_{name:s}'].setIcon(QIcon(os.path.join(
+                self._plugin_root_fld, ICON_FLD, f'{name:s}.svg'
+                )))
+            self._ui_dict[f'action_{name:s}'].setToolTip(tooltip)
+            self._ui_dict[f'action_{name:s}'].setEnabled(False)
+            self._ui_dict['toolbar_iface'].addAction(self._ui_dict[f'action_{name:s}'])
 
         self._wait_for_mainwindow = True
         self._iface.initializationCompleted.connect(self._connect_ui)
@@ -130,5 +153,13 @@ class Nahleberg:
         QGIS Plugin Interface Routine
         """
 
+        for item in self._ui_dict.values():
+            if not hasattr(item, 'setVisible'):
+                continue
+            item.setVisible(False)
+
         for cleanup_action in self._ui_cleanup:
             cleanup_action()
+
+        self._ui_dict.clear()
+        self._ui_cleanup.clear()
