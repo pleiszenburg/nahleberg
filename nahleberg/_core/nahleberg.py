@@ -93,18 +93,18 @@ class Nahleberg:
             self._plugin_root_fld, TRANSLATION_FLD
             ))
 
-        self._ui_dict['action_manage'] = QAction(tr('&Nahleberg Management'))
-        self._ui_dict['action_manage'].setObjectName('action_manage')
-        self._ui_dict['action_manage'].setEnabled(False)
-        self._ui_dict['action_manage'].setIcon(QIcon(os.path.join(
-            self._plugin_root_fld, ICON_FLD, PLUGIN_ICON_FN
-            )))
-
-        nahlebergMenuText = tr('Nahle&berg')
-        self._iface.addPluginToMenu(nahlebergMenuText, self._ui_dict['action_manage'])
-        self._ui_cleanup.append(
-            lambda: self._iface.removePluginMenu(nahlebergMenuText, self._ui_dict['action_manage'])
-            )
+        # self._ui_dict['action_manage'] = QAction(tr('&Nahleberg Management'))
+        # self._ui_dict['action_manage'].setObjectName('action_manage')
+        # self._ui_dict['action_manage'].setEnabled(False)
+        # self._ui_dict['action_manage'].setIcon(QIcon(os.path.join(
+        #     self._plugin_root_fld, ICON_FLD, PLUGIN_ICON_FN
+        #     )))
+        #
+        # nahlebergMenuText = tr('Nahle&berg')
+        # self._iface.addPluginToMenu(nahlebergMenuText, self._ui_dict['action_manage'])
+        # self._ui_cleanup.append(
+        #     lambda: self._iface.removePluginMenu(nahlebergMenuText, self._ui_dict['action_manage'])
+        #     )
 
         self._ui_dict['toolbar_iface'] = self._iface.addToolBar(tr(PLUGIN_NAME))
         self._ui_dict['toolbar_iface'].setObjectName(PLUGIN_NAME.lower())
@@ -145,7 +145,33 @@ class Nahleberg:
             msg_critical(e, self._mainwindow)
             return
 
-        # TODO
+        for name in (
+            'connect',
+            'disconnect',
+            'new',
+            'destroy',
+        ):
+            self._ui_dict[f'action_{name:s}'].triggered.connect(getattr(self, f'_{name:s}'))
+
+
+    def _connect(self):
+
+        self._fsm.connect()
+
+
+    def _disconnect(self):
+
+        self._fsm.disconnect()
+
+
+    def _new(self):
+
+        self._fsm.new()
+
+
+    def _destroy(self):
+
+        self._fsm.destroy()
 
 
     def unload(self):

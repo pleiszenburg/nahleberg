@@ -42,3 +42,23 @@ class Fsm(FsmABC):
     def __init__(self, config: ConfigABC):
 
         self._config = config
+
+
+    def connect(self):
+
+        pass
+
+
+    def disconnect(self):
+
+        pass
+
+
+    def new(self):
+
+        pass
+
+
+    def destroy(self):
+
+        pass
