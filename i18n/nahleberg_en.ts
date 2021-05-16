@@ -103,18 +103,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nahleberg/_core/fsm.py" line="67"/>
-        <source>cluster is already disconnect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../nahleberg/_core/fsm.py" line="73"/>
         <source>cluster is already connected - disconnect before creating a new one</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../nahleberg/_core/fsm.py" line="79"/>
-        <source>cluster is disconnect - can not destroy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -135,6 +125,16 @@
     <message>
         <location filename="../nahleberg/_core/nahleberg.py" line="121"/>
         <source>Destroy cluster</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nahleberg/_core/fsm.py" line="67"/>
+        <source>cluster is already disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../nahleberg/_core/fsm.py" line="79"/>
+        <source>cluster is disconnected - can not destroy</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

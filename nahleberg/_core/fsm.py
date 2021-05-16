@@ -64,7 +64,7 @@ class Fsm(FsmABC):
     async def disconnect(self):
 
         if not self.connected:
-            raise ClusterDisconnected(tr('cluster is already disconnect'))
+            raise ClusterDisconnected(tr('cluster is already disconnected'))
 
 
     async def new(self):
@@ -76,4 +76,4 @@ class Fsm(FsmABC):
     async def destroy(self):
 
         if not self.connected:
-            raise ClusterDisconnected(tr('cluster is disconnect - can not destroy'))
+            raise ClusterDisconnected(tr('cluster is disconnected - can not destroy'))
