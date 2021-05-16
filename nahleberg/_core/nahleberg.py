@@ -134,7 +134,7 @@ class Nahleberg:
         self._ui_dict['radio_status'].setToolTip(tr('disconnected'))
         self._ui_dict['radio_status'].setChecked(False)
         self._ui_dict['radio_status'].setEnabled(False)
-        self._ui_dict['radio_status'].setStyleSheet(RADIO_COLOR.format(COLOR = 'red'))
+        self._set_color('red')
         self._ui_dict['toolbar_iface'].addWidget(self._ui_dict['radio_status'])
 
         self._action_names = (
@@ -303,6 +303,13 @@ class Nahleberg:
                     await self._busy_task
                 except CancelledError:
                     pass
+
+
+    def _set_color(self, color: str):
+
+        assert len(color) > 0
+
+        self._ui_dict['radio_status'].setStyleSheet(RADIO_COLOR.format(COLOR = color))
 
 
     def unload(self):
