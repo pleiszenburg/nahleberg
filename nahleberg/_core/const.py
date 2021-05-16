@@ -34,3 +34,26 @@ PLUGIN_ICON_FN = 'nahleberg.svg'
 PLUGIN_NAME = 'Nahleberg'
 QGIS_CONFIG_FLD = 'QGIS'
 TRANSLATION_FLD = 'i18n'
+
+RADIO_COLOR = """
+QRadioButton {{
+    background-color: transparent;
+    color: white;
+}}
+
+QRadioButton::indicator {{
+    width: 10px;
+    height: 10px;
+    border-radius: 7px;
+}}
+
+QRadioButton::indicator:checked {{
+    background-color: {COLOR:s};
+    border: 2px solid white;
+}}
+
+QRadioButton::indicator:unchecked {{
+    background-color: transparent;
+    border: 2px solid white;
+}}
+"""

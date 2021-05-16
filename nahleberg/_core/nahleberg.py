@@ -36,6 +36,7 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QAction,
+    QRadioButton,
 )
 
 from qgis.gui import QgisInterface
@@ -54,6 +55,7 @@ from .const import (
     ICON_FLD,
     PLUGIN_ICON_FN,
     PLUGIN_NAME,
+    RADIO_COLOR,
     TRANSLATION_FLD,
 )
 from .error import ClusterConnected, ClusterDisconnected
@@ -117,6 +119,14 @@ class Nahleberg:
         self._ui_cleanup.append(
             lambda: self._ui_dict['toolbar_iface'].setParent(None)
             )
+
+        self._ui_dict['radio_status'] = QRadioButton()
+        self._ui_dict['radio_status'].setObjectName('radio_status')
+        self._ui_dict['radio_status'].setToolTip(tr('disconnected'))
+        self._ui_dict['radio_status'].setChecked(False)
+        self._ui_dict['radio_status'].setEnabled(False)
+        self._ui_dict['radio_status'].setStyleSheet(RADIO_COLOR.format(COLOR = 'red'))
+        self._ui_dict['toolbar_iface'].addWidget(self._ui_dict['radio_status'])
 
         for name, tooltip in (
             ('connect', tr('Connect to existing cluster')),
