@@ -58,7 +58,7 @@ from .const import (
 )
 from .error import ClusterConnected, ClusterDisconnected
 from .fsm import Fsm
-from .msg import msg_critical
+from .msg import msg_critical, msg_warning
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # CLASS
@@ -171,9 +171,14 @@ class Nahleberg:
     @asyncSlot
     async def _connect(self):
 
+        prefix = 'cluster' # TODO
+
         try:
-            await self._fsm.connect()
+            await self._fsm.connect(prefix = prefix)
         except ClusterConnected as e:
+            msg_warning(e, self._mainwindow)
+            return
+        except Exception as e:
             msg_critical(e, self._mainwindow)
             return
 
@@ -184,6 +189,9 @@ class Nahleberg:
         try:
             await self._fsm.disconnect()
         except ClusterDisconnected as e:
+            msg_warning(e, self._mainwindow)
+            return
+        except Exception as e:
             msg_critical(e, self._mainwindow)
             return
 
@@ -191,9 +199,14 @@ class Nahleberg:
     @asyncSlot
     async def _new(self):
 
+        prefix = 'cluster' # TODO
+
         try:
-            await self._fsm.new()
+            await self._fsm.new(prefix = prefix)
         except ClusterConnected as e:
+            msg_warning(e, self._mainwindow)
+            return
+        except Exception as e:
             msg_critical(e, self._mainwindow)
             return
 
@@ -204,6 +217,9 @@ class Nahleberg:
         try:
             await self._fsm.destroy()
         except ClusterDisconnected as e:
+            msg_warning(e, self._mainwindow)
+            return
+        except Exception as e:
             msg_critical(e, self._mainwindow)
             return
 
